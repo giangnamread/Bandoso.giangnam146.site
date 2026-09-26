@@ -1,0 +1,1459 @@
+<!DOCTYPE html>
+<html lang="vi" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bản đồ Lịch sử và Địa lý Tương tác - 34 Tỉnh Thành</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        #map { width: 100%; height: 100%; min-height: 450px; z-index: 10; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 h-full flex flex-col overflow-hidden">
+
+    <header class="bg-indigo-900 text-white shadow-md px-6 py-4 flex flex-col md:flex-row justify-between items-center shrink-0">
+        <div class="flex items-center gap-3 mb-3 md:mb-0">
+            <div class="bg-indigo-700 p-2.5 rounded-xl shadow-inner">
+                <i class="fa-solid fa-map-location-dot text-2xl text-amber-300"></i>
+            </div>
+            <div>
+                <h1 class="text-xl font-bold tracking-tight">Bản đồ Lịch sử & Địa lý Tương tác</h1>
+                <p class="text-xs text-indigo-200">Hưởng ứng Chuyển đổi số Việt Nam & Tỉnh Quảng Trị | Tác giả: Nguyễn Thị Lan Anh (Lớp 10E - TT GDNN-GDTX Gio Linh)</p>
+            </div>
+        </div>
+        <!-- Navigation Tabs -->
+        <div class="flex bg-indigo-950/60 p-1.5 rounded-xl border border-indigo-800/60 text-sm gap-1 overflow-x-auto max-w-full">
+            <button onclick="switchTab('intro')" id="tab-intro" class="px-4 py-2 rounded-lg font-medium transition bg-indigo-600 text-white shadow-sm flex items-center gap-2 whitespace-nowrap">
+                <i class="fa-solid fa-house-chimney"></i> Giới thiệu đề tài
+            </button>
+            <button onclick="switchTab('map')" id="tab-map" class="px-4 py-2 rounded-lg font-medium transition text-indigo-200 hover:text-white hover:bg-indigo-800/50 flex items-center gap-2 whitespace-nowrap">
+                <i class="fa-solid fa-earth-asia"></i> Bản đồ 2 cấp (34 Tỉnh)
+            </button>
+            <button onclick="switchTab('slides')" id="tab-slides" class="px-4 py-2 rounded-lg font-medium transition text-indigo-200 hover:text-white hover:bg-indigo-800/50 flex items-center gap-2 whitespace-nowrap">
+                <i class="fa-solid fa-presentation-screen"></i> Thuyết trình Slide
+            </button>
+            <button onclick="switchTab('quiz')" id="tab-quiz" class="px-4 py-2 rounded-lg font-medium transition text-indigo-200 hover:text-white hover:bg-indigo-800/50 flex items-center gap-2 whitespace-nowrap">
+                <i class="fa-solid fa-puzzle-piece"></i> Ôn tập & Trắc nghiệm
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-1 overflow-hidden p-4 md:p-6 flex flex-col">
+
+        <!-- SECTION 1: INTRODUCTION & AUTHOR INFO -->
+        <div id="section-intro" class="flex-1 overflow-y-auto custom-scrollbar bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8 space-y-6">
+            <div class="max-w-4xl mx-auto space-y-6">
+                <!-- Author & School Banner -->
+                <div class="bg-gradient-to-r from-indigo-50 to-amber-50 border border-indigo-100 rounded-2xl p-6 flex flex-col md:flex-row items-center gap-6">
+                    <div class="w-24 h-24 bg-indigo-600 text-white rounded-2xl flex items-center justify-center text-4xl font-bold shadow-lg shrink-0">
+                        LA
+                    </div>
+                    <div class="space-y-2 text-center md:text-left">
+                        <span class="px-3 py-1 bg-amber-500 text-white text-xs font-semibold rounded-full shadow-sm">Tác giả sản phẩm</span>
+                        <h2 class="text-2xl font-bold text-slate-900">Nguyễn Thị Lan Anh</h2>
+                        <p class="text-indigo-700 font-medium">Lớp 10E • Niên khóa: 2026 - 2029</p>
+                        <p class="text-slate-600 text-sm"><i class="fa-solid fa-school text-indigo-600 mr-1.5"></i> Trung tâm GDNN - GDTX Gio Linh, Tỉnh Quảng Trị</p>
+                    </div>
+                </div>
+
+                <!-- Story & Inspiration -->
+                <div class="space-y-4 text-slate-700 leading-relaxed text-base">
+                    <h3 class="text-xl font-bold text-slate-900 border-b pb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-lightbulb text-amber-500"></i> Lý do chọn đề tài & Cảm hứng sáng lập
+                    </h3>
+                    <p>
+                        Là một học sinh vừa mới rời mái trường trung học cơ sở bước vào ngưỡng cửa trung học phổ thông, em đã gặp không ít bỡ ngỡ và khó khăn ban đầu khi tiếp cận với khối lượng kiến thức sâu và rộng hơn của bộ môn <strong>Lịch sử</strong> và <strong>Địa lý</strong> lớp 10. Những mốc thời gian lịch sử dày đặc, các sơ đồ địa lý và không gian lãnh thổ phức tạp đôi khi khiến em cảm thấy áp lực.
+                    </p>
+                    <p>
+                        Tuy nhiên, nhờ sự giảng dạy tận tình, truyền cảm hứng của giáo viên bộ môn và đặc biệt là sự khích lệ, định hướng tận tâm của thầy giáo chủ nhiệm - <strong>Thầy giáo Nguyễn Giang Nam</strong>, em đã dần lấy lại niềm đam mê và tìm ra phương pháp học tập trực quan sinh động hơn. Thầy đã khơi gợi cho em ý tưởng ứng dụng công nghệ thông tin để giải quyết những khó khăn trong việc học bộ môn này.
+                    </p>
+                    <p>
+                        Do thời gian thực hiện có hạn, em mới chỉ phác thảo ý tưởng và nhận được sự giúp đỡ quý báu từ thầy giáo chủ nhiệm trong việc sưu tầm tư liệu, xây dựng cơ sở dữ liệu di tích bước đầu nên nội dung có thể chưa thật sự đầy đủ. Tuy nhiên, mục đích lớn nhất của em khi thực hiện sản phẩm này là thiết thực <strong>hưởng ứng Ngày Chuyển đổi số Quốc gia và Ngày Chuyển đổi số Tỉnh Quảng Trị</strong>. 
+                    </p>
+                    <p>
+                        Với vốn kiến thức tin học ban đầu còn nhiều hạn hẹp, nhưng qua quá trình tự nghiên cứu, thực hành cùng sự hướng dẫn sát sao của GVCN, em đã hiểu rõ hơn về cách ứng dụng công nghệ số vào học tập, góp phần lan tỏa tình yêu quê hương, đất nước qua không gian số hiện đại.
+                    </p>
+                </div>
+
+                <!-- Key Highlights Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
+                    <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                        <div class="w-10 h-10 bg-indigo-100 text-indigo-700 rounded-xl flex items-center justify-center font-bold mb-3"><i class="fa-solid fa-landmark"></i></div>
+                        <h4 class="font-bold text-slate-900 mb-1">Bản đồ 2 Cấp</h4>
+                        <p class="text-xs text-slate-600">Hệ thống hóa di tích lịch sử và địa danh đỏ theo mô hình hành chính cấp Tỉnh & Cấp Xã trên 34 tỉnh thành.</p>
+                    </div>
+                    <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                        <div class="w-10 h-10 bg-amber-100 text-amber-700 rounded-xl flex items-center justify-center font-bold mb-3"><i class="fa-solid fa-bolt"></i></div>
+                        <h4 class="font-bold text-slate-900 mb-1">Chuyển đổi số & Đám mây</h4>
+                        <p class="text-xs text-slate-600">Lưu trữ hình ảnh di tích trực tuyến an toàn trên đám mây, không bao giờ mất đi dữ liệu.</p>
+                    </div>
+                    <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                        <div class="w-10 h-10 bg-emerald-100 text-emerald-700 rounded-xl flex items-center justify-center font-bold mb-3"><i class="fa-solid fa-graduation-cap"></i></div>
+                        <h4 class="font-bold text-slate-900 mb-1">Học tập & Trải nghiệm</h4>
+                        <p class="text-xs text-slate-600">Tích hợp trắc nghiệm kiến thức và slide thuyết trình tự động giúp học sinh ôn tập hiệu quả.</p>
+                    </div>
+                </div>
+
+                <div class="pt-4 flex justify-end">
+                    <button onclick="switchTab('map')" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-md transition flex items-center gap-2">
+                        Khám phá Bản đồ Vệ tinh ngay <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 2: INTERACTIVE MAP (SATELLITE DEFAULT) -->
+        <div id="section-map" class="hidden flex-1 flex flex-col md:flex-row gap-4 h-full">
+            <!-- Sidebar Controls & Location Info -->
+            <div class="w-full md:w-96 bg-white rounded-2xl shadow-sm border border-slate-200 flex flex-col overflow-hidden shrink-0">
+                <div class="p-4 border-b bg-slate-50 flex flex-col gap-3">
+                    <h3 class="font-bold text-slate-800 flex items-center justify-between">
+                        <span><i class="fa-solid fa-filter text-indigo-600 mr-2"></i>Tra cứu Di tích</span>
+                        <span id="location-count" class="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full font-semibold">34 địa danh</span>
+                    </h3>
+                    <div class="relative">
+                        <input type="text" id="search-input" oninput="filterLocations()" placeholder="Tìm tên di tích, xã, huyện, tỉnh..." class="w-full pl-9 pr-4 py-2 text-sm bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-sm"></i>
+                    </div>
+                    <!-- Province Filter Dropdown -->
+                    <select id="province-filter" onchange="filterLocations()" class="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium text-slate-700">
+                        <option value="all">-- Tất cả 34 Tỉnh / Thành phố --</option>
+                    </select>
+                </div>
+
+                <!-- Location List with Thumbnails -->
+                <div id="location-list" class="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-3">
+                    <!-- Dynamic Items populated by JS -->
+                </div>
+            </div>
+
+            <!-- Leaflet Map Container with Satellite Default -->
+            <div class="flex-1 bg-white rounded-2xl shadow-sm border border-slate-200 p-2 relative flex flex-col overflow-hidden">
+                <div id="map" class="flex-1 w-full rounded-xl"></div>
+                <!-- Map Layer Switcher & Geolocation Controls -->
+                <div class="absolute top-4 right-4 z-[999] flex flex-col gap-2">
+                    <div class="bg-white/90 backdrop-blur-md p-1.5 rounded-xl shadow-lg border border-slate-200 flex gap-1 text-xs">
+                        <button onclick="setMapLayer('streets')" id="layer-streets" class="px-2.5 py-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 font-medium transition">Đường phố</button>
+                        <button onclick="setMapLayer('satellite')" id="layer-satellite" class="px-2.5 py-1.5 rounded-lg bg-indigo-600 text-white font-medium transition">Vệ tinh</button>
+                        <button onclick="setMapLayer('terrain')" id="layer-terrain" class="px-2.5 py-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 font-medium transition">Địa hình</button>
+                    </div>
+                    <button onclick="locateUser()" class="bg-white/90 backdrop-blur-md px-3 py-2 rounded-xl shadow-lg border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-700 transition flex items-center gap-2 self-end shadow-sm">
+                        <i class="fa-solid fa-location-crosshairs text-indigo-600"></i> Vị trí của tôi
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 3: PRESENTATION SLIDES -->
+        <div id="section-slides" class="hidden flex-1 flex flex-col bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8 overflow-hidden">
+            <div class="flex justify-between items-center border-b pb-4 mb-6">
+                <div>
+                    <h3 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-laptop-code text-indigo-600"></i> Slide Thuyết trình Dự án
+                    </h3>
+                    <p class="text-xs text-slate-500">Trình bày báo cáo trước hội đồng & giáo viên</p>
+                </div>
+                <div class="flex items-center gap-2 text-sm font-medium text-slate-600">
+                    Slide <span id="current-slide-num" class="font-bold text-indigo-600">1</span> / <span id="total-slide-num">6</span>
+                </div>
+            </div>
+
+            <!-- Slide Content Box -->
+            <div id="slide-content-container" class="flex-1 bg-slate-50 border border-slate-200 rounded-2xl p-8 flex flex-col justify-between overflow-y-auto custom-scrollbar">
+                <!-- Populated dynamically via JS -->
+            </div>
+
+            <!-- Slide Navigation Controls -->
+            <div class="flex justify-between items-center pt-6 mt-4 border-t">
+                <button onclick="prevSlide()" id="prev-slide-btn" class="px-5 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold rounded-xl transition flex items-center gap-2 disabled:opacity-40">
+                    <i class="fa-solid fa-arrow-left"></i> Slide trước
+                </button>
+                <div class="flex gap-1.5" id="slide-dots">
+                    <!-- Dots -->
+                </div>
+                <button onclick="nextSlide()" id="next-slide-btn" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition flex items-center gap-2">
+                    Slide tiếp <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- SECTION 4: QUIZ / KNOWLEDGE CHECK -->
+        <div id="section-quiz" class="hidden flex-1 overflow-y-auto custom-scrollbar bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
+            <div class="max-w-2xl mx-auto space-y-6">
+                <div class="text-center space-y-2">
+                    <span class="px-3 py-1 bg-amber-100 text-amber-800 text-xs font-semibold rounded-full">Trắc nghiệm kiến thức</span>
+                    <h3 class="text-2xl font-bold text-slate-900">Thử thách Lịch sử & Địa lý 34 Tỉnh Thành</h3>
+                    <p class="text-sm text-slate-600">Kiểm tra hiểu biết của bạn về các di tích cách mạng và địa danh văn hóa.</p>
+                </div>
+
+                <div id="quiz-card" class="bg-slate-50 border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+                    <div class="flex justify-between text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                        <span id="quiz-progress">Câu hỏi 1 / 45</span>
+                        <span id="quiz-score">Điểm: 0</span>
+                    </div>
+                    <h4 id="quiz-question" class="text-lg font-bold text-slate-800">Đang tải câu hỏi...</h4>
+                    <div id="quiz-options" class="grid grid-cols-1 gap-3 pt-2">
+                        <!-- Options generated by JS -->
+                    </div>
+                </div>
+
+                <!-- Navigation Controls for Quiz -->
+                <div class="flex justify-between items-center pt-2">
+                    <button onclick="prevQuizQuestion()" id="prev-quiz-btn" class="px-5 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold rounded-xl transition flex items-center gap-2 text-sm disabled:opacity-40">
+                        <i class="fa-solid fa-arrow-left"></i> Câu trước
+                    </button>
+                    <button onclick="nextQuizQuestion()" id="next-quiz-btn" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition flex items-center gap-2 text-sm">
+                        Câu tiếp <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+
+                <div id="quiz-result-box" class="hidden text-center space-y-4 p-6 bg-indigo-50 border border-indigo-100 rounded-2xl">
+                    <h4 class="text-xl font-bold text-indigo-900">Hoàn thành xuất sắc!</h4>
+                    <p id="quiz-final-score" class="text-slate-700 font-medium">Bạn đã hoàn thành bài trắc nghiệm.</p>
+                    <button onclick="restartQuiz()" class="px-6 py-2.5 bg-indigo-600 text-white font-semibold rounded-xl shadow-md hover:bg-indigo-700 transition">
+                        Làm lại trắc nghiệm
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="image-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[9999] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-4 border border-slate-200">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="font-bold text-slate-900 text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-cloud-arrow-up text-indigo-600"></i> Cập nhật ảnh đám mây
+                </h3>
+                <button onclick="closeImageModal()" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="space-y-3">
+                <p id="modal-landmark-name" class="text-sm font-semibold text-indigo-700"></p>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Đường dẫn hình ảnh (URL):</label>
+                    <input type="text" id="modal-image-url" placeholder="https://example.com/image.jpg" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div class="text-center text-xs text-slate-400">Hoặc tải ảnh từ thiết bị:</div>
+                <div>
+                    <input type="file" id="modal-file-input" accept="image/*" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                </div>
+            </div>
+            <div class="flex justify-end gap-2 pt-2 border-t">
+                <button onclick="closeImageModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs transition">Hủy</button>
+                <button onclick="saveCloudImage()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-xs transition shadow">Lưu vào đám mây</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        
+        let db, auth, currentUser;
+        let cloudImages = {}; // id -> url
+        let editingLocationId = null;
+
+        try {
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+            
+            async function initFirebase() {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+                currentUser = auth.currentUser;
+                if (currentUser) {
+                    subscribeToCloudImages();
+                }
+            }
+            initFirebase();
+        } catch (e) {
+            console.log("Firebase running in local mode:", e);
+        }
+
+        function subscribeToCloudImages() {
+            if (!db) return;
+            const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'landmark_cloud_images');
+            onSnapshot(colRef, (snapshot) => {
+                cloudImages = {};
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    if (data.locationId && data.imageUrl) {
+                        cloudImages[data.locationId] = data.imageUrl;
+                    }
+                });
+                renderLocationList(locationsData);
+                renderMapMarkers(locationsData);
+            }, (error) => {
+                console.error("Firestore sync error:", error);
+            });
+        }
+
+        window.openImageModal = function(id) {
+            editingLocationId = id;
+            const loc = locationsData.find(l => l.id === id);
+            if (loc) {
+                document.getElementById('modal-landmark-name').textContent = `Di tích: ${loc.name}`;
+                document.getElementById('modal-image-url').value = cloudImages[loc.id] || loc.image;
+                document.getElementById('modal-file-input').value = '';
+                document.getElementById('image-modal').classList.remove('hidden');
+            }
+        };
+
+        window.closeImageModal = function() {
+            document.getElementById('image-modal').classList.add('hidden');
+            editingLocationId = null;
+        };
+
+        window.saveCloudImage = async function() {
+            if (!editingLocationId) return;
+            const urlInput = document.getElementById('modal-image-url').value.trim();
+            const fileInput = document.getElementById('modal-file-input');
+
+            let finalUrl = urlInput;
+
+            if (fileInput.files && fileInput.files[0]) {
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    finalUrl = e.target.result;
+                    await persistImageToCloud(editingLocationId, finalUrl);
+                };
+                reader.readAsDataURL(file);
+            } else if (finalUrl) {
+                await persistImageToCloud(editingLocationId, finalUrl);
+            } else {
+                alert("Vui lòng nhập đường dẫn ảnh hoặc chọn tệp ảnh.");
+            }
+        };
+
+        async function persistImageToCloud(id, url) {
+            cloudImages[id] = url;
+            if (db && currentUser) {
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'landmark_cloud_images', String(id));
+                    await setDoc(docRef, {
+                        locationId: id,
+                        imageUrl: url,
+                        updatedAt: new Date().toISOString()
+                    });
+                } catch (e) {
+                    console.error("Error saving to cloud:", e);
+                }
+            }
+            closeImageModal();
+            renderLocationList(locationsData);
+            renderMapMarkers(locationsData);
+        }
+
+        // 34 Provinces and Cities Data with authentic photography
+        const locationsData = [
+            {
+                id: 1,
+                name: "Thành cổ Quảng Trị",
+                province: "Tỉnh Quảng Trị",
+                commune: "Phường 2, Thị xã Quảng Trị",
+                lat: 16.7533,
+                lng: 107.1864,
+                region: "Miền Trung",
+                desc: "Di tích quốc gia đặc biệt ghi dấu chiến dịch 81 ngày đêm anh dũng năm 1972.",
+                image: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 2,
+                name: "Cầu Hiền Lương - Sông Bến Hải",
+                province: "Tỉnh Quảng Trị",
+                commune: "Xã Vĩnh Sơn, Huyện Vĩnh Linh",
+                lat: 17.0055,
+                lng: 107.0988,
+                region: "Miền Trung",
+                desc: "Giới tuyến quân sự tạm thời vĩ tuyến 17, biểu tượng khát vọng thống nhất non sông.",
+                image: "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 3,
+                name: "Địa đạo Vịnh Mốc",
+                province: "Tỉnh Quảng Trị",
+                commune: "Xã Vĩnh Thạch, Huyện Vĩnh Linh",
+                lat: 17.0734,
+                lng: 107.1215,
+                region: "Miền Trung",
+                desc: "Hệ thống làng hầm địa đạo kiên cường trong kháng chiến chống Mỹ cứu nước.",
+                image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 4,
+                name: "Nghĩa trang Quốc gia Trường Sơn",
+                province: "Tỉnh Quảng Trị",
+                commune: "Xã Gio Linh, Huyện Gio Linh",
+                lat: 16.7022,
+                lng: 107.0733,
+                region: "Miền Trung",
+                desc: "Nơi an nghỉ đời đời của các anh hùng liệt sĩ hy sinh trên tuyến đường Hồ Chí Minh.",
+                image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 5,
+                name: "Cố đô Hoa Lư",
+                province: "Tỉnh Ninh Bình",
+                commune: "Xã Trường Yên, Huyện Hoa Lư",
+                lat: 20.2678,
+                lng: 105.9189,
+                region: "Miền Bắc",
+                desc: "Kinh đô đầu tiên của nhà nước phong kiến tập quyền trung ương Đại Cồ Việt.",
+                image: "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 6,
+                name: "Khu di tích Pác Bó",
+                province: "Tỉnh Cao Bằng",
+                commune: "Xã Trường Hà, Huyện Hà Quảng",
+                lat: 22.9733,
+                lng: 105.7042,
+                region: "Miền Bắc",
+                desc: "Nơi Chủ tịch Hồ Chí Minh trở về nước trực tiếp lãnh đạo cách mạng Việt Nam năm 1941.",
+                image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 7,
+                name: "Khu di tích Tân Trào",
+                province: "Tỉnh Tuyên Quang",
+                commune: "Xã Tân Trào, Huyện Sơn Dương",
+                lat: 21.7583,
+                lng: 105.5333,
+                region: "Miền Bắc",
+                desc: "Thủ đô khu giải phóng, nơi diễn ra Đại hội Quốc dân Tân Trào trước Tổng khởi nghĩa.",
+                image: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 8,
+                name: "Đền Hùng",
+                province: "Tỉnh Phú Thọ",
+                commune: "Xã Hy Cương, Thành phố Việt Trì",
+                lat: 21.3621,
+                lng: 105.3283,
+                region: "Miền Bắc",
+                desc: "Trung tâm tâm linh cội nguồn thờ cúng các Vua Hùng dựng nước.",
+                image: "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 9,
+                name: "Hoàng thành Thăng Long",
+                province: "Thành phố Hà Nội",
+                commune: "Phường Điện Biên, Quận Ba Đình",
+                lat: 21.0367,
+                lng: 105.8344,
+                region: "Miền Bắc",
+                desc: "Di sản văn hóa thế giới gắn liền với lịch sử ngàn năm văn hiến của Thủ đô.",
+                image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 10,
+                name: "Khu di tích Chủ tịch Hồ Chí Minh tại Phủ Chủ tịch",
+                province: "Thành phố Hà Nội",
+                commune: "Phường Ngọc Hà, Quận Ba Đình",
+                lat: 21.0381,
+                lng: 105.8333,
+                region: "Miền Bắc",
+                desc: "Nơi Bác Hồ sinh sống và làm việc trong những năm tháng cuối đời.",
+                image: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 11,
+                name: "Văn Miếu - Quốc Tử Giám",
+                province: "Thành phố Hà Nội",
+                commune: "Phường Văn Miếu, Quận Đống Đa",
+                lat: 21.0294,
+                lng: 105.8353,
+                region: "Miền Bắc",
+                desc: "Trường đại học đầu tiên của Việt Nam, biểu tượng tôn sư trọng đạo.",
+                image: "https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 12,
+                name: "Khu di tích Côn Sơn - Kiếp Bạc",
+                province: "Tỉnh Hải Dương",
+                commune: "Xã Cộng Hòa, Thành phố Chí Linh",
+                lat: 21.1611,
+                lng: 106.3533,
+                region: "Miền Bắc",
+                desc: "Gắn liền với thân thế sự nghiệp của Nguyễn Trãi và Hưng Đạo Vương Trần Quốc Tuấn.",
+                image: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 13,
+                name: "Khu di tích Bạch Đằng Giang",
+                province: "Thành phố Hải Phòng",
+                commune: "Xã Minh Đạm, Huyện Thủy Nguyên",
+                lat: 21.0123,
+                lng: 106.7011,
+                region: "Miền Bắc",
+                desc: "Nơi ghi dấu các chiến công oanh liệt chống giặc ngoại xâm trên sông Bạch Đằng.",
+                image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 14,
+                name: "Khu di tích Đền Trần",
+                province: "Tỉnh Nam Định",
+                commune: "Phường Lộc Vượng, Thành phố Nam Định",
+                lat: 20.4372,
+                lng: 106.1825,
+                region: "Miền Bắc",
+                desc: "Nơi thờ các vị vua triều đại nhà Trần hào hùng.",
+                image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 15,
+                name: "Khu di tích Lam Kinh",
+                province: "Tỉnh Thanh Hóa",
+                commune: "Xã Xuân Lam, Huyện Thọ Xuân",
+                lat: 19.9055,
+                lng: 105.3789,
+                region: "Miền Trung",
+                desc: "Quê hương và nơi an lăng của các vua nhà Lê sơ.",
+                image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 16,
+                name: "Thành Nhà Hồ",
+                province: "Tỉnh Thanh Hóa",
+                commune: "Xã Vĩnh Long, Huyện Vĩnh Lộc",
+                lat: 20.0811,
+                lng: 105.6083,
+                region: "Miền Trung",
+                desc: "Di sản văn hóa thế giới với kiến trúc thành đá độc đáo bậc nhất.",
+                image: "https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 17,
+                name: "Khu di tích Kim Liên",
+                province: "Tỉnh Nghệ An",
+                commune: "Xã Kim Liên, Huyện Nam Đàn",
+                lat: 18.6833,
+                lng: 105.5833,
+                region: "Miền Trung",
+                desc: "Quê hương Chủ tịch Hồ Chí Minh kính yêu.",
+                image: "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 18,
+                name: "Khu lưu niệm Đại thi hào Nguyễn Du",
+                province: "Tỉnh Hà Tĩnh",
+                commune: "Xã Xuân Nghiên, Huyện Nghi Xuân",
+                lat: 18.5711,
+                lng: 105.7344,
+                region: "Miền Trung",
+                desc: "Nơi lưu giữ di sản của tác giả Truyện Kiều nổi tiếng.",
+                image: "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 19,
+                name: "Quần thể di tích Cố đô Huế",
+                province: "Tỉnh Thừa Thiên Huế",
+                commune: "Phường Thuận Thành, Thành phố Huế",
+                lat: 16.4637,
+                lng: 107.5909,
+                region: "Miền Trung",
+                desc: "Kinh đô của triều Nguyễn từ năm 1802 đến năm 1945.",
+                image: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 20,
+                name: "Phố cổ Hội An",
+                province: "Tỉnh Quảng Nam",
+                commune: "Phường Minh An, Thành phố Hội An",
+                lat: 15.8801,
+                lng: 108.3380,
+                region: "Miền Trung",
+                desc: "Thương cảng quốc tế sầm uất thế kỷ XVII - XVIII.",
+                image: "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 21,
+                name: "Khu di tích Mỹ Sơn",
+                province: "Tỉnh Quảng Nam",
+                commune: "Xã Duy Phú, Huyện Duy Xuyên",
+                lat: 15.7622,
+                lng: 108.1258,
+                region: "Miền Trung",
+                desc: "Thánh địa đền tháp Chăm pa cổ kính được UNESCO công nhận.",
+                image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 22,
+                name: "Bảo tàng Điêu khắc Chăm Đà Nẵng",
+                province: "Thành phố Đà Nẵng",
+                commune: "Phường Bình Hiên, Quận Hải Châu",
+                lat: 16.0611,
+                lng: 108.2144,
+                region: "Miền Trung",
+                desc: "Nơi lưu giữ bộ sưu tập nghệ thuật điêu khắc Chăm quy mô nhất thế giới.",
+                image: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 23,
+                name: "Khu di tích Sơn Mỹ",
+                province: "Tỉnh Quảng Ngãi",
+                commune: "Xã Tịnh Khê, Thành phố Quảng Ngãi",
+                lat: 15.1211,
+                lng: 108.8044,
+                region: "Miền Trung",
+                desc: "Khu chứng tích tội ác chiến tranh Sơn Mỹ lịch sử.",
+                image: "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 24,
+                name: "Tháp Nhạn Phú Yên",
+                province: "Tỉnh Phú Yên",
+                commune: "Phường 1, Thành phố Tuy Hòa",
+                lat: 13.0881,
+                lng: 109.3089,
+                region: "Miền Trung",
+                desc: "Ngôi tháp Chăm cổ uy nghi sừng sững bên bờ sông Đà Rằng.",
+                image: "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 25,
+                name: "Tháp Po Klong Garai",
+                province: "Tỉnh Ninh Thuận",
+                commune: "Phường Đô Vinh, Thành phố Phan Rang - Tháp Chàm",
+                lat: 11.5655,
+                lng: 108.9711,
+                region: "Miền Trung",
+                desc: "Cụm đền tháp Chăm pa đẹp và nguyên vẹn nhất Việt Nam.",
+                image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 26,
+                name: "Dinh Độc Lập",
+                province: "Thành phố Hồ Chí Minh",
+                commune: "Phường Bến Thành, Quận 1",
+                lat: 10.7769,
+                lng: 106.6953,
+                region: "Miền Nam",
+                desc: "Biểu tượng chiến thắng lịch sử mùa xuân 1975 thống nhất đất nước.",
+                image: "https://images.unsplash.com/photo-1583417319070-4a69db38a482?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 27,
+                name: "Bảo tàng Chứng tích Chiến tranh",
+                province: "Thành phố Hồ Chí Minh",
+                commune: "Phường Võ Thị Sáu, Quận 3",
+                lat: 10.7794,
+                lng: 106.6922,
+                region: "Miền Nam",
+                desc: "Nơi lưu giữ các tư liệu và hiện vật lịch sử chiến tranh.",
+                image: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 28,
+                name: "Địa đạo Củ Chi",
+                province: "Thành phố Hồ Chí Minh",
+                commune: "Xã Phú Mỹ Hưng, Huyện Củ Chi",
+                lat: 11.1417,
+                lng: 106.4969,
+                region: "Miền Nam",
+                desc: "Mê cung dưới lòng đất thể hiện ý chí quật cường của quân và dân ta.",
+                image: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 29,
+                name: "Căn cứ Trung ương Cục Miền Nam",
+                province: "Tỉnh Tây Ninh",
+                commune: "Xã Tân Lập, Huyện Tân Biên",
+                lat: 11.6033,
+                lng: 105.9922,
+                region: "Miền Nam",
+                desc: "Cơ quan đầu não lãnh đạo cách mạng miền Nam trong kháng chiến chống Mỹ.",
+                image: "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 30,
+                name: "Nhà tù Côn Đảo",
+                province: "Tỉnh Bà Rịa - Vũng Tàu",
+                commune: "Huyện Côn Đảo",
+                lat: 8.6822,
+                lng: 106.6067,
+                region: "Miền Nam",
+                desc: "Nơi ghi dấu tinh thần bất khuất của các chiến sĩ cách mạng kiên trung.",
+                image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 31,
+                name: "Khu di tích Phù Nam Ó Eo",
+                province: "Tỉnh An Giang",
+                commune: "Thị trấn Ó Eo, Huyện Thoại Sơn",
+                lat: 10.2189,
+                lng: 105.1844,
+                region: "Miền Nam",
+                desc: "Trung tâm văn hóa khảo cổ nổi tiếng của vương quốc Phù Nam cổ xưa.",
+                image: "https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 32,
+                name: "Lăng Nguyễn Trung Trực",
+                province: "Tỉnh Kiên Giang",
+                commune: "Phường Vĩnh Thanh, Thành phố Rạch Giá",
+                lat: 10.0125,
+                lng: 105.0806,
+                region: "Miền Nam",
+                desc: "Nơi thờ vị anh hùng dân tộc tiêu biểu cho phong trào kháng chiến Nam Kỳ.",
+                image: "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 33,
+                name: "Chợ nổi Cái Răng",
+                province: "Thành phố Cần Thơ",
+                commune: "Phường Lê Bình, Quận Cái Răng",
+                lat: 10.0033,
+                lng: 105.7489,
+                region: "Miền Nam",
+                desc: "Nét văn hóa giao thương đặc trưng độc đáo trên sông nước miền Tây.",
+                image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 34,
+                name: "Đất mũi Cà Mau",
+                province: "Tỉnh Cà Mau",
+                commune: "Xã Đất Mũi, Huyện Ngọc Hiển",
+                lat: 8.6367,
+                lng: 104.7322,
+                region: "Miền Nam",
+                desc: "Điểm cực Nam thiêng liêng của Tổ quốc trên đất liền.",
+                image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80"
+            }
+        ];
+
+        // Presentation slides content
+        const slidesData = [
+            {
+                title: "Giới thiệu Đề tài & Tác giả",
+                subtitle: "Ứng dụng Công nghệ thông tin trong học tập Lịch sử & Địa lý",
+                content: `
+                    <div class="space-y-4">
+                        <div class="bg-indigo-50 border border-indigo-100 p-5 rounded-2xl">
+                            <h4 class="font-bold text-indigo-900 mb-2"><i class="fa-solid fa-user-graduate mr-2"></i>Thông tin học sinh</h4>
+                            <p class="text-slate-700"><strong>Họ và tên:</strong> Nguyễn Thị Lan Anh</p>
+                            <p class="text-slate-700"><strong>Lớp:</strong> 10E • <strong>Niên khóa:</strong> 2026 - 2029</p>
+                            <p class="text-slate-700"><strong>Đơn vị:</strong> Trung tâm GDNN - GDTX Gio Linh, Tỉnh Quảng Trị</p>
+                        </div>
+                        <div class="bg-amber-50 border border-amber-100 p-5 rounded-2xl">
+                            <h4 class="font-bold text-amber-900 mb-2"><i class="fa-solid fa-chalkboard-user mr-2"></i>Người hướng dẫn</h4>
+                            <p class="text-slate-700"><strong>Giáo viên chủ nhiệm:</strong> Thầy giáo Nguyễn Giang Nam</p>
+                            <p class="text-slate-600 text-sm mt-1">Người đã tận tình định hướng ý tưởng, hỗ trợ sưu tầm tư liệu và khích lệ tinh thần nghiên cứu khoa học cho học sinh.</p>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                title: "Bối cảnh & Khó khăn ban đầu",
+                subtitle: "Hành trình vượt qua thử thách từ Cấp 2 lên Cấp 3",
+                content: `
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-slate-100 p-5 rounded-2xl border">
+                                <h4 class="font-bold text-slate-900 mb-2 text-rose-600"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Thử thách học tập</h4>
+                                <ul class="list-disc list-inside text-sm text-slate-700 space-y-2">
+                                    <li>Khối lượng kiến thức Lịch sử và Địa lý THPT dày đặc và sâu sắc hơn.</li>
+                                    <li>Khó khăn trong việc ghi nhớ hệ thống các mốc thời gian và không gian lãnh thổ.</li>
+                                    <li>Phương pháp học truyền thống đôi khi còn khô khan, thiếu trực quan sinh động.</li>
+                                </ul>
+                            </div>
+                            <div class="bg-indigo-50 p-5 rounded-2xl border border-indigo-100">
+                                <h4 class="font-bold text-indigo-900 mb-2"><i class="fa-solid fa-compass mr-2"></i>Định hướng giải pháp</h4>
+                                <ul class="list-disc list-inside text-sm text-slate-700 space-y-2">
+                                    <li>Ứng dụng công nghệ thông tin tạo trang web bản đồ số tương tác.</li>
+                                    <li>Biến dữ liệu khô khan thành trực quan sinh động trên bản đồ vệ tinh thực tế.</li>
+                                    <li>Kết hợp ôn tập trắc nghiệm và hệ thống quản lý 2 cấp (Tỉnh & Xã).</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                title: "Hưởng ứng Chuyển đổi số & Lưu trữ Đám mây",
+                subtitle: "Thiết thực chào mừng Ngày Chuyển đổi số Quốc gia & Quảng Trị",
+                content: `
+                    <div class="space-y-4">
+                        <div class="bg-gradient-to-r from-indigo-900 to-indigo-800 text-white p-6 rounded-2xl space-y-3">
+                            <h4 class="text-lg font-bold text-amber-300"><i class="fa-solid fa-cloud mr-2"></i>Cơ sở dữ liệu đám mây an toàn</h4>
+                            <p class="text-indigo-100 text-sm leading-relaxed">
+                                Hưởng ứng chủ trương chuyển đổi số, hệ thống tích hợp khả năng lưu trữ hình ảnh di tích trực tuyến trên đám mây, đảm bảo dữ liệu luôn được bảo vệ an toàn và không bao giờ bị mất đi.
+                            </p>
+                        </div>
+                        <div class="bg-slate-50 p-5 rounded-2xl border">
+                            <h4 class="font-bold text-slate-800 mb-2">Giá trị mang lại:</h4>
+                            <p class="text-sm text-slate-700">
+                                Với sự hướng dẫn của thầy giáo Nguyễn Giang Nam và nỗ lực tự học tin học, em đã tự tay xây dựng ứng dụng web này để phục vụ việc học tập cá nhân cũng như chia sẻ tài nguyên cho bạn bè cùng lớp.
+                            </p>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                title: "Kiến trúc Bản đồ 2 Cấp & Dữ liệu",
+                subtitle: "Hệ thống hóa 34 tỉnh thành từ Bắc chí Nam",
+                content: `
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-slate-50 p-4 rounded-xl border text-center">
+                                <span class="text-2xl font-bold text-indigo-600">Cấp 1</span>
+                                <h5 class="font-bold text-slate-800 mt-1">Cấp Tỉnh / Thành phố</h5>
+                                <p class="text-xs text-slate-600 mt-1">Phân chia rõ ràng 34 tỉnh thành trọng điểm trên toàn quốc.</p>
+                            </div>
+                            <div class="bg-slate-50 p-4 rounded-xl border text-center">
+                                <span class="text-2xl font-bold text-amber-600">Cấp 2</span>
+                                <h5 class="font-bold text-slate-800 mt-1">Cấp Xã / Phường</h5>
+                                <p class="text-xs text-slate-600 mt-1">Xác định vị trí chi tiết từng xã, phường đặt di tích lịch sử.</p>
+                            </div>
+                            <div class="bg-slate-50 p-4 rounded-xl border text-center">
+                                <span class="text-2xl font-bold text-emerald-600">Vệ tinh</span>
+                                <h5 class="font-bold text-slate-800 mt-1">Bản đồ thực tế</h5>
+                                <p class="text-xs text-slate-600 mt-1">Tích hợp lớp bản đồ vệ tinh sắc nét, định vị chính xác.</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                title: "Tính năng Nổi bật của Phần mềm",
+                subtitle: "Trải nghiệm mượt mà trên nền tảng Web",
+                content: `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-slate-50 p-5 rounded-xl border">
+                            <h4 class="font-bold text-indigo-900 mb-2"><i class="fa-solid fa-map-location-dot text-indigo-600 mr-2"></i>Bản đồ Tương tác Leaflet</h4>
+                            <p class="text-xs text-slate-700">Cho phép chuyển đổi linh hoạt giữa các chế độ Vệ tinh, Đường phố và Địa hình; tìm kiếm nhanh chóng.</p>
+                        </div>
+                        <div class="bg-slate-50 p-5 rounded-xl border">
+                            <h4 class="font-bold text-indigo-900 mb-2"><i class="fa-solid fa-cloud-arrow-up text-amber-600 mr-2"></i>Quản lý Ảnh Đám Mây</h4>
+                            <p class="text-xs text-slate-700">Học sinh và giáo viên có thể thêm hoặc cập nhật ảnh thực tế trực tiếp, lưu vĩnh viễn trên đám mây.</p>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                title: "Kết luận & Hướng phát triển",
+                subtitle: "Định hướng tương lai cho dự án học tập",
+                content: `
+                    <div class="space-y-4">
+                        <div class="bg-emerald-50 border border-emerald-100 p-6 rounded-2xl space-y-3">
+                            <h4 class="text-lg font-bold text-emerald-900"><i class="fa-solid fa-circle-check mr-2"></i>Tổng kết thành quả</h4>
+                            <p class="text-emerald-800 text-sm leading-relaxed">
+                                Dự án đã hoàn thành mục tiêu đề ra, giúp em vượt qua bỡ ngỡ ban đầu ở cấp 3, đồng thời khẳng định khả năng ứng dụng công nghệ thông tin của học sinh TT GDNN-GDTX Gio Linh trong kỷ nguyên số.
+                            </p>
+                        </div>
+                        <div class="text-center pt-2">
+                            <p class="text-sm font-semibold text-slate-600">Xin chân thành cảm ơn Thầy Cô và các bạn đã lắng nghe!</p>
+                        </div>
+                    </div>
+                `
+            }
+        ];
+
+        let currentSlide = 0;
+        let map = null;
+        let markers = {};
+        let currentLayer = 'satellite';
+        let streetLayer, satelliteLayer, terrainLayer;
+        let userMarker = null;
+
+        // Expanded Quiz Data (45 Questions)
+        const quizData = [
+            {
+                question: "Thành cổ Quảng Trị gắn liền với chiến dịch lịch sử kéo dài bao nhiêu ngày đêm năm 1972?",
+                options: ["60 ngày đêm", "81 ngày đêm", "90 ngày đêm", "100 ngày đêm"],
+                correct: 1
+            },
+            {
+                question: "Sông nào làm giới tuyến quân sự tạm thời vĩ tuyến 17 theo Hiệp định Giơ-ne-vơ 1954?",
+                options: ["Sông Gianh", "Sông Thạch Hãn", "Sông Bến Hải", "Sông Hương"],
+                correct: 2
+            },
+            {
+                question: "Địa đạo Vịnh Mốc nằm ở xã nào của huyện Vĩnh Linh, tỉnh Quảng Trị?",
+                options: ["Xã Vĩnh Thạch", "Xã Vĩnh Sơn", "Xã Vĩnh Hòa", "Xã Vĩnh Kim"],
+                correct: 0
+            },
+            {
+                question: "Nghĩa trang Quốc gia Trường Sơn nằm ở huyện nào của tỉnh Quảng Trị?",
+                options: ["Huyện Hướng Hóa", "Huyện Đakrông", "Huyện Gio Linh", "Huyện Cam Lộ"],
+                correct: 2
+            },
+            {
+                question: "Cố đô Hoa Lư - kinh đô đầu tiên của nhà nước Đại Cồ Việt thuộc tỉnh nào?",
+                options: ["Tỉnh Ninh Bình", "Tỉnh Thanh Hóa", "Tỉnh Nam Định", "Tỉnh Phú Thọ"],
+                correct: 0
+            },
+            {
+                question: "Khu di tích Pác Bó nơi Bác Hồ về nước năm 1941 thuộc huyện nào của tỉnh Cao Bằng?",
+                options: ["Huyện Trà Lĩnh", "Huyện Hà Quảng", "Huyện Quảng Hòa", "Huyện Thạch An"],
+                correct: 1
+            },
+            {
+                question: "Thủ đô khu giải phóng Tân Trào nằm ở huyện nào của tỉnh Tuyên Quang?",
+                options: ["Huyện Na Hang", "Huyện Chiêm Hóa", "Huyện Sơn Dương", "Huyện Yên Sơn"],
+                correct: 2
+            },
+            {
+                question: "Đền Hùng - cội nguồn dân tộc Việt Nam tọa lạc tại xã nào của thành phố Việt Trì, tỉnh Phú Thọ?",
+                options: ["Xã Hy Cương", "Xã Chu Hóa", "Xã Tiên Cát", "Xã Vân Phú"],
+                correct: 0
+            },
+            {
+                question: "Hoàng thành Thăng Long di sản văn hóa thế giới nằm ở quận nào của Hà Nội?",
+                options: ["Quận Hoàn Kiếm", "Quận Ba Đình", "Quận Đống Đa", "Quận Tây Hồ"],
+                correct: 1
+            },
+            {
+                question: "Khu di tích Phủ Chủ tịch nơi Bác Hồ sống và làm việc ở Hà Nội nằm tại phường nào?",
+                options: ["Phường Điện Biên", "Phường Ngọc Hà", "Phường Quán Thánh", "Phường Trúc Bạch"],
+                correct: 1
+            },
+            {
+                question: "Văn Miếu - Quốc Tử Giám trường đại học đầu tiên nằm ở quận nào của Hà Nội?",
+                options: ["Quận Hai Bà Trưng", "Quận Đống Đa", "Quận Cầu Giấy", "Quận Thanh Xuân"],
+                correct: 1
+            },
+            {
+                question: "Khu di tích Côn Sơn - Kiếp Bạc gắn liền với danh nhân văn hóa nào?",
+                options: ["Nguyễn Trãi & Trần Hưng Đạo", "Lê Lợi & Nguyễn Trãi", "Quang Trung & Nguyễn Huệ", "Nguyễn Du & Hồ Xuân Hương"],
+                correct: 0
+            },
+            {
+                question: "Khu di tích Bạch Đằng Giang ghi dấu chiến công oanh liệt nằm ở thành phố nào?",
+                options: ["Thành phố Hải Phòng", "Tỉnh Quảng Ninh", "Tỉnh Thái Bình", "Tỉnh Nam Định"],
+                correct: 0
+            },
+            {
+                question: "Đền Trần - nơi thờ các vị vua nhà Trần nổi tiếng thuộc tỉnh nào?",
+                options: ["Tỉnh Thái Bình", "Tỉnh Nam Định", "Tỉnh Ninh Bình", "Tỉnh Hà Nam"],
+                correct: 1
+            },
+            {
+                question: "Khu di tích Lam Kinh - quê hương vua nhà Lê sơ thuộc huyện nào của Thanh Hóa?",
+                options: ["Huyện Vĩnh Lộc", "Huyện Thọ Xuân", "Huyện Triệu Sơn", "Huyện Nông Cống"],
+                correct: 1
+            },
+            {
+                question: "Thành Nhà Hồ di sản văn hóa thế giới với kiến trúc thành đá độc đáo thuộc huyện nào của Thanh Hóa?",
+                options: ["Huyện Vĩnh Lộc", "Huyện Thọ Xuân", "Huyện Hoằng Hóa", "Huyện Quảng Xương"],
+                correct: 0
+            },
+            {
+                question: "Khu di tích Kim Liên - quê hương Chủ tịch Hồ Chí Minh thuộc huyện nào của Nghệ An?",
+                options: ["Huyện Đô Lương", "Huyện Thanh Chương", "Huyện Nam Đàn", "Huyện Diễn Châu"],
+                correct: 2
+            },
+            {
+                question: "Khu lưu niệm đại thi hào Nguyễn Du - tác giả Truyện Kiều nằm ở huyện nào của Hà Tĩnh?",
+                options: ["Huyện Nghi Xuân", "Huyện Can Lộc", "Huyện Thạch Hà", "Huyện Hương Sơn"],
+                correct: 0
+            },
+            {
+                question: "Quần thể di tích Cố đô Huế là kinh đô của triều đại phong kiến nào?",
+                options: ["Triều Lý", "Triều Trần", "Triều Lê", "Triều Nguyễn"],
+                correct: 3
+            },
+            {
+                question: "Phố cổ Hội An - thương cảng sầm uất thế kỷ XVII-XVIII thuộc tỉnh nào?",
+                options: ["Tỉnh Quảng Trị", "Tỉnh Thừa Thiên Huế", "Tỉnh Quảng Nam", "Tỉnh Quảng Ngãi"],
+                correct: 2
+            },
+            {
+                question: "Thánh địa Mỹ Sơn - di sản đền tháp Chăm pa thuộc huyện nào của Quảng Nam?",
+                options: ["Huyện Duy Xuyên", "Huyện Điện Bàn", "Huyện Đại Lộc", "Huyện Thăng Bình"],
+                correct: 0
+            },
+            {
+                question: "Bảo tàng Điêu khắc Chăm quy mô nhất thế giới nằm ở thành phố nào?",
+                options: ["Thành phố Huế", "Thành phố Đà Nẵng", "Thành phố Quy Nhơn", "Thành phố Nha Trang"],
+                correct: 1
+            },
+            {
+                question: "Khu chứng tích chiến tranh Sơn Mỹ lịch sử thuộc tỉnh nào?",
+                options: ["Tỉnh Quảng Trị", "Tỉnh Quảng Nam", "Tỉnh Quảng Ngãi", "Tỉnh Bình Định"],
+                correct: 2
+            },
+            {
+                question: "Tháp Nhạn uy nghi sừng sững bên bờ sông Đà Rằng thuộc tỉnh nào?",
+                options: ["Tỉnh Phú Yên", "Tỉnh Khánh Hòa", "Tỉnh Ninh Thuận", "Tỉnh Bình Thuận"],
+                correct: 0
+            },
+            {
+                question: "Cụm đền tháp Chăm pa Po Klong Garai nguyên vẹn nhất nằm ở thành phố nào?",
+                options: ["Thành phố Nha Trang", "Thành phố Phan Rang - Tháp Chàm", "Thành phố Phan Thiết", "Thành phố Tuy Hòa"],
+                correct: 1
+            },
+            {
+                question: "Dinh Độc Lập biểu tượng thống nhất đất nước nằm ở Quận 1 của thành phố nào?",
+                options: ["Thành phố Cần Thơ", "Thành phố Đà Nẵng", "Thành phố Hồ Chí Minh", "Thành phố Biên Hòa"],
+                correct: 2
+            },
+            {
+                question: "Bảo tàng Chứng tích Chiến tranh nằm ở quận nào của Thành phố Hồ Chí Minh?",
+                options: ["Quận 1", "Quận 3", "Quận 5", "Quận 10"],
+                correct: 1
+            },
+            {
+                question: "Địa đạo Củ Chi - mê cung dưới lòng đất thuộc huyện nào của TP.HCM?",
+                options: ["Huyện Hóc Môn", "Huyện Củ Chi", "Huyện Bình Chánh", "Huyện Nhà Bè"],
+                correct: 1
+            },
+            {
+                question: "Căn cứ Trung ương Cục Miền Nam trong kháng chiến chống Mỹ thuộc tỉnh nào?",
+                options: ["Tỉnh Bình Dương", "Tỉnh Bình Phước", "Tỉnh Tây Ninh", "Tỉnh Đồng Nai"],
+                correct: 2
+            },
+            {
+                question: "Nhà tù Côn Đảo - 'địa ngục trần gian' thuộc đơn vị hành chính nào?",
+                options: ["Huyện Côn Đảo, Bà Rịa - Vũng Tàu", "Thành phố Vũng Tàu", "Thị xã Phú Mỹ", "Huyện Long Điền"],
+                correct: 0
+            },
+            {
+                question: "Khu di tích Phù Nam Ó Eo gắn liền với vương quốc cổ nào?",
+                options: ["Vương quốc Champa", "Vương quốc Phù Nam", "Vương quốc Chân Lạp", "Vương quốc Đại Việt"],
+                correct: 1
+            },
+            {
+                question: "Lăng anh hùng dân tộc Nguyễn Trung Trực nằm ở thành phố nào của tỉnh Kiên Giang?",
+                options: ["Thành phố Hà Tiên", "Thành phố Phú Quốc", "Thành phố Rạch Giá", "Huyện Kiên Lương"],
+                correct: 2
+            },
+            {
+                question: "Chợ nổi Cái Răng - nét văn hóa sông nước đặc trưng thuộc thành phố nào?",
+                options: ["Thành phố Cần Thơ", "Thành phố Long Xuyên", "Thành phố Sóc Trăng", "Thành phố Vĩnh Long"],
+                correct: 0
+            },
+            {
+                question: "Đất Mũi Cà Mau - điểm cực Nam thiêng liêng thuộc huyện nào?",
+                options: ["Huyện Năm Căn", "Huyện Ngọc Hiển", "Huyện Đầm Dơi", "Huyện Trần Văn Thời"],
+                correct: 1
+            },
+            {
+                question: "Tỉnh Quảng Trị có đường biên giới phía Tây giáp với quốc gia nào?",
+                options: ["Trung Quốc", "Campuchia", "Lào", "Thái Lan"],
+                correct: 2
+            },
+            {
+                question: "Vĩ tuyến 17 đi qua tỉnh nào của nước ta, chia cắt đất nước trong giai đoạn 1954-1975?",
+                options: ["Tỉnh Quảng Bình", "Tỉnh Quảng Trị", "Tỉnh Thừa Thiên Huế", "Tỉnh Quảng Nam"],
+                correct: 1
+            },
+            {
+                question: "Tên gọi 'Đại Cồ Việt' là quốc hiệu nước ta thời nhà nào?",
+                options: ["Nhà Đinh và nhà Tiền Lê", "Nhà Lý và nhà Trần", "Nhà Ngô và nhà Đinh", "Nhà Lê sơ và nhà Mạc"],
+                correct: 0
+            },
+            {
+                question: "Ai là người lãnh đạo cuộc khởi nghĩa Lam Sơn chống quân Minh xâm lược?",
+                options: ["Nguyễn Trãi", "Lê Lợi", "Trần Hưng Đạo", "Quang Trung"],
+                correct: 1
+            },
+            {
+                question: "Trận chiến trên sông Bạch Đằng năm 938 do ai lãnh đạo đánh tan quân Nam Hán?",
+                options: ["Lý Thường Kiệt", "Trần Hưng Đạo", "Ngô Quyền", "Lê Hoàn"],
+                correct: 2
+            },
+            {
+                question: "Ai là vị tướng tài ba lãnh đạo quân dân nhà Trần đánh tan quân Nguyên Mông lần thứ 2 và 3?",
+                options: ["Trần Hưng Đạo", "Trần Quang Khải", "Trần Nhật Duật", "Trần Quốc Toản"],
+                correct: 0
+            },
+            {
+                question: "Tác giả của áng thiên cổ hùng văn 'Bình Ngô đại cáo' là ai?",
+                options: ["Lê Lợi", "Nguyễn Trãi", "Nguyễn Bỉnh Khiêm", "Nguyễn Du"],
+                correct: 1
+            },
+            {
+                question: "Phong trào Tây Sơn do ba anh em Nguyễn Nhạc, Nguyễn Huệ, Nguyễn Lữ lãnh đạo bùng nổ vào năm nào của thế kỷ XVIII?",
+                options: ["Năm 1771", "Năm 1789", "Năm 1802", "Năm 1784"],
+                correct: 0
+            },
+            {
+                question: "Ngày giải phóng hoàn toàn miền Nam, thống nhất đất nước là ngày tháng năm nào?",
+                options: ["19/08/1945", "02/09/1945", "30/04/1975", "07/05/1954"],
+                correct: 2
+            },
+            {
+                question: "Sự kiện nào đánh dấu mốc mở đầu cho Cách mạng Tháng Tám năm 1945 thành công tại Hà Nội?",
+                options: ["Ngày Tổng khởi nghĩa 19/8/1945", "Ngày 2/9/1945 đọc Tuyên ngôn Độc lập", "Ngày 7/5/1954 chiến thắng Điện Biên Phủ", "Ngày 30/4/1975 giải phóng Sài Gòn"],
+                correct: 0
+            },
+            {
+                question: "Mục đích lớn nhất của việc xây dựng ứng dụng bản đồ tương tác di tích lịch sử này là gì?",
+                options: ["Hưởng ứng Ngày Chuyển đổi số Quốc gia và Tỉnh Quảng Trị", "Chỉ để chơi game giải trí", "Thay thế hoàn toàn sách giáo khoa", "Để thi đấu thể thao điện tử"],
+                correct: 0
+            }
+        ];
+        let currentQuizIndex = 0;
+        let score = 0;
+        let userAnswers = {};
+
+        // Initialize application on load
+        window.onload = function() {
+            populateProvinceFilter();
+            renderLocationList(locationsData);
+            renderSlide();
+            renderSlideDots();
+            loadQuiz();
+        };
+
+        // Tab Switching
+        window.switchTab = function(tabId) {
+            ['intro', 'map', 'slides', 'quiz'].forEach(t => {
+                document.getElementById(`section-${t}`).classList.add('hidden');
+                document.getElementById(`tab-${t}`).className = "px-4 py-2 rounded-lg font-medium transition text-indigo-200 hover:text-white hover:bg-indigo-800/50 flex items-center gap-2 whitespace-nowrap";
+            });
+
+            document.getElementById(`section-${tabId}`).classList.remove('hidden');
+            document.getElementById(`tab-${tabId}`).className = "px-4 py-2 rounded-lg font-medium transition bg-indigo-600 text-white shadow-sm flex items-center gap-2 whitespace-nowrap";
+
+            if (tabId === 'map') {
+                setTimeout(() => {
+                    initMapIfNeeded();
+                }, 100);
+            }
+        };
+
+        // Initialize Leaflet Map with Satellite Default
+        function initMapIfNeeded() {
+            if (!map) {
+                map = L.map('map', { zoomControl: false }).setView([16.0471, 108.2062], 6);
+                L.control.zoom({ position: 'topleft' }).addTo(map);
+
+                streetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 18,
+                    attribution: '&copy; OpenStreetMap'
+                });
+
+                satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                    maxZoom: 18,
+                    attribution: 'Tiles &copy; Esri'
+                });
+
+                terrainLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 17,
+                    attribution: 'Map data: OpenTopoMap'
+                });
+
+                satelliteLayer.addTo(map);
+                renderMapMarkers(locationsData);
+            }
+            map.invalidateSize();
+        }
+
+        // Map Layer Switcher
+        window.setMapLayer = function(layerType) {
+            if (!map) return;
+            [streetLayer, satelliteLayer, terrainLayer].forEach(l => {
+                if (map.hasLayer(l)) map.removeLayer(l);
+            });
+
+            ['streets', 'satellite', 'terrain'].forEach(id => {
+                document.getElementById(`layer-${id}`).className = "px-2.5 py-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 font-medium transition";
+            });
+
+            currentLayer = layerType;
+            if (layerType === 'streets') {
+                streetLayer.addTo(map);
+                document.getElementById('layer-streets').className = "px-2.5 py-1.5 rounded-lg bg-indigo-600 text-white font-medium transition";
+            } else if (layerType === 'satellite') {
+                satelliteLayer.addTo(map);
+                document.getElementById('layer-satellite').className = "px-2.5 py-1.5 rounded-lg bg-indigo-600 text-white font-medium transition";
+            } else if (layerType === 'terrain') {
+                terrainLayer.addTo(map);
+                document.getElementById('layer-terrain').className = "px-2.5 py-1.5 rounded-lg bg-indigo-600 text-white font-medium transition";
+            }
+        };
+
+        function populateProvinceFilter() {
+            const select = document.getElementById('province-filter');
+            const provinces = [...new Set(locationsData.map(item => item.province))].sort();
+            provinces.forEach(prov => {
+                const opt = document.createElement('option');
+                opt.value = prov;
+                opt.textContent = prov;
+                select.appendChild(opt);
+            });
+        }
+
+        function renderLocationList(data) {
+            const container = document.getElementById('location-list');
+            container.innerHTML = '';
+            document.getElementById('location-count').textContent = `${data.length} địa danh`;
+
+            if (data.length === 0) {
+                container.innerHTML = `<div class="text-center py-8 text-slate-400 text-sm">Không tìm thấy địa danh phù hợp.</div>`;
+                return;
+            }
+
+            data.forEach(item => {
+                const currentImg = cloudImages[item.id] || item.image;
+                const card = document.createElement('div');
+                card.className = "bg-white border border-slate-200 hover:border-indigo-400 p-3 rounded-xl cursor-pointer transition shadow-sm hover:shadow group";
+                card.innerHTML = `
+                    <div class="relative mb-2 overflow-hidden rounded-lg h-28 bg-slate-100" onclick="focusLocationById(${item.id})">
+                        <img src="${currentImg}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.src='https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=600&q=80'">
+                        <span class="absolute top-2 right-2 text-[10px] bg-indigo-900/80 backdrop-blur-md text-white px-2.5 py-0.5 rounded-full font-medium shadow">${item.region}</span>
+                    </div>
+                    <div class="space-y-1" onclick="focusLocationById(${item.id})">
+                        <h4 class="font-bold text-slate-900 group-hover:text-indigo-600 text-sm transition line-clamp-1">${item.name}</h4>
+                        <p class="text-xs text-indigo-700 font-medium"><i class="fa-solid fa-location-dot mr-1"></i>${item.province} - ${item.commune}</p>
+                        <p class="text-xs text-slate-500 line-clamp-2">${item.desc}</p>
+                    </div>
+                    <div class="mt-2 pt-2 border-t flex justify-between items-center">
+                        <span class="text-[10px] text-emerald-700 font-semibold flex items-center gap-1"><i class="fa-solid fa-cloud text-indigo-600"></i> Lưu đám mây</span>
+                        <button onclick="event.stopPropagation(); openImageModal(${item.id})" class="px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold rounded-lg transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-camera"></i> Đổi ảnh
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function renderMapMarkers(data) {
+            if (!map) return;
+            Object.values(markers).forEach(m => map.removeLayer(m));
+            markers = {};
+
+            data.forEach(item => {
+                const currentImg = cloudImages[item.id] || item.image;
+                const customIcon = L.divIcon({
+                    className: 'custom-div-icon',
+                    html: `<div style="background-color: #4f46e5; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; border: 2px solid white; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3); font-size: 12px;"><i class="fa-solid fa-landmark"></i></div>`,
+                    iconSize: [28, 28],
+                    iconAnchor: [14, 14]
+                });
+
+                const marker = L.marker([item.lat, item.lng], { icon: customIcon }).addTo(map);
+                marker.bindPopup(`
+                    <div class="p-2 space-y-2 max-w-xs">
+                        <img src="${currentImg}" alt="${item.name}" class="w-full h-32 object-cover rounded-lg shadow-sm" onerror="this.src='https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=600&q=80'">
+                        <h3 class="font-bold text-slate-900 text-sm">${item.name}</h3>
+                        <p class="text-xs text-indigo-700 font-semibold"><i class="fa-solid fa-location-dot mr-1"></i>${item.province} (${item.commune})</p>
+                        <p class="text-xs text-slate-600">${item.desc}</p>
+                        <button onclick="openImageModal(${item.id})" class="w-full mt-1 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700 transition">Cập nhật ảnh đám mây</button>
+                    </div>
+                `);
+
+                markers[item.id] = marker;
+            });
+        }
+
+        window.focusLocationById = function(id) {
+            const item = locationsData.find(l => l.id === id);
+            if (item && map) {
+                map.setView([item.lat, item.lng], 14);
+                if (markers[id]) markers[id].openPopup();
+            }
+        };
+
+        window.filterLocations = function() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const province = document.getElementById('province-filter').value;
+
+            const filtered = locationsData.filter(item => {
+                const matchesQuery = item.name.toLowerCase().includes(query) || 
+                                     item.province.toLowerCase().includes(query) || 
+                                     item.commune.toLowerCase().includes(query) ||
+                                     item.desc.toLowerCase().includes(query);
+                const matchesProvince = (province === 'all' || item.province === province);
+                return matchesQuery && matchesProvince;
+            });
+
+            renderLocationList(filtered);
+            renderMapMarkers(filtered);
+        };
+
+        window.locateUser = function() {
+            if (!navigator.geolocation) {
+                alert("Trình duyệt không hỗ trợ định vị.");
+                return;
+            }
+            navigator.geolocation.getCurrentPosition(position => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                if (map) {
+                    map.setView([lat, lng], 13);
+                    if (userMarker) map.removeLayer(userMarker);
+                    
+                    const userIcon = L.divIcon({
+                        className: 'user-icon',
+                        html: `<div style="background-color: #ef4444; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; border: 2px solid white; box-shadow: 0 0 10px rgba(239, 68, 68, 0.8);"><i class="fa-solid fa-user text-xs"></i></div>`,
+                        iconSize: [24, 24],
+                        iconAnchor: [12, 12]
+                    });
+                    userMarker = L.marker([lat, lng], { icon: userIcon }).addTo(map).bindPopup("Vị trí của bạn").openPopup();
+                }
+            }, () => {
+                alert("Không thể lấy được vị trí của bạn.");
+            });
+        };
+
+        function renderSlide() {
+            const slide = slidesData[currentSlide];
+            const container = document.getElementById('slide-content-container');
+            container.innerHTML = `
+                <div class="space-y-4">
+                    <span class="text-xs uppercase tracking-wider font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full">Slide ${currentSlide + 1}</span>
+                    <h3 class="text-2xl font-bold text-slate-900">${slide.title}</h3>
+                    <p class="text-slate-600 text-sm font-medium border-b pb-3">${slide.subtitle}</p>
+                    <div class="pt-2">${slide.content}</div>
+                </div>
+            `;
+            document.getElementById('current-slide-num').textContent = currentSlide + 1;
+            document.getElementById('total-slide-num').textContent = slidesData.length;
+            document.getElementById('prev-slide-btn').disabled = currentSlide === 0;
+            document.getElementById('next-slide-btn').disabled = currentSlide === slidesData.length - 1;
+            updateSlideDots();
+        }
+
+        function renderSlideDots() {
+            const dotsContainer = document.getElementById('slide-dots');
+            dotsContainer.innerHTML = '';
+            slidesData.forEach((_, idx) => {
+                const dot = document.createElement('button');
+                dot.className = `w-3 h-3 rounded-full transition ${idx === currentSlide ? 'bg-indigo-600 w-6' : 'bg-slate-300'}`;
+                dot.onclick = () => { currentSlide = idx; renderSlide(); };
+                dotsContainer.appendChild(dot);
+            });
+        }
+
+        function updateSlideDots() {
+            const dots = document.getElementById('slide-dots').children;
+            for (let i = 0; i < dots.length; i++) {
+                dots[i].className = `w-3 h-3 rounded-full transition ${i === currentSlide ? 'bg-indigo-600 w-6' : 'bg-slate-300'}`;
+            }
+        }
+
+        window.nextSlide = function() {
+            if (currentSlide < slidesData.length - 1) {
+                currentSlide++;
+                renderSlide();
+            }
+        };
+
+        window.prevSlide = function() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                renderSlide();
+            }
+        };
+
+        function loadQuiz() {
+            const q = quizData[currentQuizIndex];
+            document.getElementById('quiz-progress').textContent = `Câu hỏi ${currentQuizIndex + 1} / ${quizData.length}`;
+            document.getElementById('quiz-score').textContent = `Điểm: ${score}`;
+            document.getElementById('quiz-question').textContent = q.question;
+
+            const optionsContainer = document.getElementById('quiz-options');
+            optionsContainer.innerHTML = '';
+
+            const savedAnswer = userAnswers[currentQuizIndex];
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                let btnClass = "w-full text-left px-4 py-3 bg-white hover:bg-indigo-50 border border-slate-200 rounded-xl font-medium text-slate-700 transition shadow-sm flex items-center justify-between";
+                
+                if (savedAnswer !== undefined) {
+                    if (idx === q.correct) {
+                        btnClass = "w-full text-left px-4 py-3 bg-emerald-100 border border-emerald-300 rounded-xl font-semibold text-emerald-800 flex items-center justify-between";
+                    } else if (idx === savedAnswer) {
+                        btnClass = "w-full text-left px-4 py-3 bg-rose-100 border border-rose-300 rounded-xl font-semibold text-rose-800 flex items-center justify-between";
+                    } else {
+                        btnClass = "w-full text-left px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-400 opacity-60 flex items-center justify-between";
+                    }
+                }
+
+                btn.className = btnClass;
+                let iconHtml = '';
+                if (savedAnswer !== undefined) {
+                    if (idx === q.correct) iconHtml = `<i class="fa-solid fa-check text-emerald-600"></i>`;
+                    else if (idx === savedAnswer) iconHtml = `<i class="fa-solid fa-xmark text-rose-600"></i>`;
+                    else iconHtml = `<i class="fa-solid fa-chevron-right text-xs text-slate-300"></i>`;
+                } else {
+                    iconHtml = `<i class="fa-solid fa-chevron-right text-xs text-slate-400"></i>`;
+                }
+
+                btn.innerHTML = `<span>${opt}</span> ${iconHtml}`;
+                if (savedAnswer === undefined) {
+                    btn.onclick = () => selectAnswer(idx);
+                } else {
+                    btn.disabled = true;
+                }
+                optionsContainer.appendChild(btn);
+            });
+
+            document.getElementById('prev-quiz-btn').disabled = currentQuizIndex === 0;
+            const nextBtn = document.getElementById('next-quiz-btn');
+            if (currentQuizIndex === quizData.length - 1) {
+                nextBtn.innerHTML = `Hoàn thành <i class="fa-solid fa-flag-checkered ml-1"></i>`;
+            } else {
+                nextBtn.innerHTML = `Câu tiếp <i class="fa-solid fa-arrow-right ml-1"></i>`;
+            }
+        }
+
+        function selectAnswer(selectedIdx) {
+            if (userAnswers[currentQuizIndex] !== undefined) return;
+            userAnswers[currentQuizIndex] = selectedIdx;
+            const q = quizData[currentQuizIndex];
+            if (selectedIdx === q.correct) {
+                score += Math.round(100 / quizData.length);
+            }
+            loadQuiz();
+        }
+
+        window.nextQuizQuestion = function() {
+            if (currentQuizIndex < quizData.length - 1) {
+                currentQuizIndex++;
+                loadQuiz();
+            } else {
+                showQuizResult();
+            }
+        };
+
+        window.prevQuizQuestion = function() {
+            if (currentQuizIndex > 0) {
+                currentQuizIndex--;
+                loadQuiz();
+            }
+        };
+
+        function showQuizResult() {
+            document.getElementById('quiz-card').classList.add('hidden');
+            document.getElementById('prev-quiz-btn').parentElement.classList.add('hidden');
+            const resBox = document.getElementById('quiz-result-box');
+            resBox.classList.remove('hidden');
+            document.getElementById('quiz-final-score').textContent = `Bạn đã hoàn thành trắc nghiệm với tổng điểm: ${score} / 100 điểm trên tổng số ${quizData.length} câu hỏi.`;
+        }
+
+        window.restartQuiz = function() {
+            currentQuizIndex = 0;
+            score = 0;
+            userAnswers = {};
+            document.getElementById('quiz-result-box').classList.add('hidden');
+            document.getElementById('quiz-card').classList.remove('hidden');
+            document.getElementById('prev-quiz-btn').parentElement.classList.remove('hidden');
+            loadQuiz();
+        };
+    </script>
+</body>
+</html>
